@@ -32,6 +32,26 @@
     r.run('hey/chris');
 })();
 
+// Most explicit wins
+(function () {
+    var r = new Rlite();
+
+    r.add('hey/joe', function (r) {
+        ok(r.url == 'hey/joe');
+    });
+
+    r.add('hey/:name', function (r) {
+        throw 'New called';
+    });
+
+    r.add('hey/jane', function (r) {
+        ok(r.url == 'hey/jane');
+    });
+
+    r.run('hey/joe');
+    r.run('hey/jane');
+})();
+
 // Complex routes work
 (function () {
     var r = new Rlite();

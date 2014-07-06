@@ -59,7 +59,7 @@ Rlite.prototype = {
         })(querySplit.length == 2 ? querySplit[1] : '');
 
         if (rules && rules['@']) {
-            rules['@']({ params: params });
+            rules['@']({ url: url, params: params });
         } else {
             this.notFound(url);
         }

@@ -70,4 +70,30 @@
     r.run('hey/chris/last/davies?last=mayo&name=ham');
 })();
 
+// Not found
+(function () {
+    var r = new Rlite();
+
+    r.add('hey/:name', function (r) {
+        throw 'Name called';
+    });
+
+    r.notFound = function (url) {
+        ok(url == 'hoi/there');
+    }
+
+    r.run('hoi/there');
+})();
+
+// Leading slashes don't matter
+(function () {
+    var r = new Rlite();
+
+    r.add('hey/:name', function (r) {
+        ok(r.params.name == 'chris');
+    });
+
+    r.run('/hey/chris');
+})();
+
 document.title = 'DONE';

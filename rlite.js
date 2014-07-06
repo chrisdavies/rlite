@@ -13,37 +13,35 @@ Rlite.prototype = {
                 name = piece.length && piece.charAt(0) == ':' ? ':' : piece;
 
             if (!rules[name]) {
-                rules[name] = {};
+                rules = (rules[name] = {});
 
                 if (name == ':') {
-                    rules[name]['@name'] = piece.substr(1, piece.length - 1);
+                    rules['@name'] = piece.substr(1, piece.length - 1);
                 }
+            } else {
+                rules = rules[name];
             }
-
-            rules = rules[name];
         }
 
         rules['@'] = handler;
     },
 
     run: function (url) {
+        url && url.length && url.charAt(0) == '/' && (url = url.substr(1, url.length));
+
         var rules = this.rules,
             querySplit = url.split('?', 2),
             pieces = querySplit[0].split('/', 50),
             params = {};
 
         (function parseUrl () {
-            for (var i = 0; i < pieces.length; ++i) {
+            for (var i = 0; i < pieces.length && rules; ++i) {
                 var piece = pieces[i],
                     lower = piece.toLowerCase(),
                     rule = rules[lower];
 
-                if (!rule) {
-                    rule = rules[':'];
-
-                    if (rule) {
-                        params[rule['@name']] = piece;
-                    }
+                if (!rule && (rule = rules[':'])) {
+                    params[rule['@name']] = piece;
                 }
 
                 rules = rule;
@@ -63,7 +61,7 @@ Rlite.prototype = {
         if (rules && rules['@']) {
             rules['@']({ params: params });
         } else {
-            alert('Not found!');
+            this.notFound(url);
         }
     }
 };

@@ -1,162 +1,73 @@
-﻿test('resolve last', function () {
-    var p = new Plite();
+﻿function ok(cond, msg) {
+    if (!cond) throw (msg || 'Ruh roh!');
+}
 
-    p.then(function (result) {
-        ok(result == 'hello');
+// Route parameter check
+(function () {
+    var r = new Rlite();
+
+    r.add('hey/:name', function (r) {
+        ok(r.params.name == 'chris');
     });
 
-    p.resolve('hello');
-});
+    r.run('hey/chris');
+})();
 
-test('resolve first', function () {
-    var p = new Plite();
+// Other routes don't get confused
+(function () {
+    var r = new Rlite();
 
-    p.resolve('world');
-
-    p.then(function (result) {
-        ok(result == 'world');
-    });
-}); 
-
-test('resolve chain', function () {
-    var p = new Plite();
-
-    p.then(function (result) {
-        return result + ' chris';
-    }).then(function (result){
-        ok(result == 'hello chris');
+    r.add('hey/:name/new', function (r) {
+        throw 'New called';
     });
 
-    p.resolve('hello');
-});
-
-asyncTest('resolve multi-promise', function () {
-    var p1 = new Plite(),
-        p2 = new Plite();
-
-    p1.then(function (result) {
-        
-        setTimeout(function () {
-            p2.resolve('hi ' + result);
-        }, 10);
-
-        return p2;
-    }).then(function (result) {
-        ok(result == 'hi chris');
-        start();
+    r.add('hey/:name', function (r) {
+        ok(r.params.name == 'chris');
     });
 
-    p1.resolve('chris');
-})
-
-test('resolve finally', function () {
-    var p = new Plite();
-
-    p.then(function (msg) {
-        return msg + ' beans';
-    }).catch(function (err) {
-        throw err;
-    }).finally(function (msg) {
-        ok(msg == 'cool beans');
-    })
-
-    p.resolve('cool');
-});
-
-test('resolve finally last', function () {
-    var p = new Plite();
-
-    p.resolve('cool');
-
-    p.then(function (msg) {
-        return msg + ' beans';
-    }).catch(function (err) {
-        throw err;
-    }).finally(function (msg) {
-        ok(msg == 'cool beans');
-    })
-});
-
-test('reject last', function () {
-    var p = new Plite();
-
-    p.then(function (result) {
-        ok(false, 'Should not have gotten to then');
-    }).catch(function (err) {
-        ok(err == 'doh');
+    r.add('hey/:name/edit', function (r) {
+        throw 'Edit called';
     });
 
-    p.reject('doh');
-})
+    r.run('hey/chris');
+})();
 
-test('reject first', function () {
-    var p = new Plite();
+// Complex routes work
+(function () {
+    var r = new Rlite();
 
-    p.reject('doh');
-
-    p.then(function (result) {
-        ok(false, 'Should not have gotten to then');
-    }).catch(function (err) {
-        ok(err == 'doh');
+    r.add('hey/:name/new', function (r) {
+        throw 'New called';
     });
-})
 
-asyncTest('reject multi-promise', function () {
-    var p1 = new Plite(),
-        p2 = new Plite();
+    r.add('hey/:name', function (r) {
+        throw 'Name called';
+    });
 
-    p1.then(function (result) {
+    r.add('hey/:name/last/:last', function (r) {
+        ok(r.params.name == 'chris' && r.params.last == 'davies');
+    });
 
-        setTimeout(function () {
-            p2.reject('snap!');
-        }, 10);
+    r.run('hey/chris/last/davies');
+})();
 
-        return p2;
-    }).then(function (result) {
-        ok(false);
-    }).catch(function (result) {
-        ok(result == 'snap!');
-    }).finally(start);
+// Query strings override other params
+(function () {
+    var r = new Rlite();
 
-    p1.resolve('chris');
-});
+    r.add('hey/:name/new', function (r) {
+        throw 'New called';
+    });
 
-test('reject finally', function () {
-    var p = new Plite();
+    r.add('hey/:name', function (r) {
+        throw 'Name called';
+    });
 
-    p.then(function (msg) {
-        ok(false);
-    }).catch(function (err) {
-        return 'e' + err;
-    }).finally(function (msg) {
-        ok(msg == 'ecool');
-    })
+    r.add('hey/:name/last/:last', function (r) {
+        ok(r.params.name == 'ham' && r.params.last == 'mayo');
+    });
 
-    p.reject('cool');
-});
+    r.run('hey/chris/last/davies?last=mayo&name=ham');
+})();
 
-test('reject finally last', function () {
-    var p = new Plite();
-
-    p.reject('cool');
-
-    p.then(function (msg) {
-        ok(false);
-    }).catch(function (err) {
-        return 'e' + err;
-    }).finally(function (msg) {
-        ok(msg == 'ecool');
-    })
-});
-
-test('catch is triggered when then excepts', function () {
-    var p = new Plite();
-
-    p.then(function () {
-        throw 'ruh roh!';
-    }).catch(function (err) {
-        ok(err == 'ruh roh!');
-    })
-
-    p.resolve('mkay');
-});
+document.title = 'DONE';

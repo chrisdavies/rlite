@@ -96,4 +96,15 @@
     r.run('/hey/chris');
 })();
 
+// Default url
+(function () {
+    var r = new Rlite();
+
+    r.add('', function (r) {
+        ok(true);
+    });
+
+    r.run('');
+})();
+
 document.title = 'DONE';

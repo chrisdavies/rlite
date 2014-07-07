@@ -1,9 +1,4 @@
-﻿function ok(cond, msg) {
-    if (!cond) throw (msg || 'Ruh roh!');
-}
-
-// Route parameter check
-(function () {
+﻿test('Route parameter check', function () {
     var r = new Rlite();
 
     r.add('hey/:name', function (r) {
@@ -11,10 +6,9 @@
     });
 
     r.run('hey/chris');
-})();
+});
 
-// Other routes don't get confused
-(function () {
+test('Other routes don\'t get confused', function () {
     var r = new Rlite();
 
     r.add('hey/:name/new', function (r) {
@@ -30,10 +24,9 @@
     });
 
     r.run('hey/chris');
-})();
+});
 
-// Most explicit wins
-(function () {
+test('Most explicit wins', function () {
     var r = new Rlite();
 
     r.add('hey/joe', function (r) {
@@ -50,10 +43,9 @@
 
     r.run('hey/joe');
     r.run('hey/jane');
-})();
+});
 
-// Complex routes work
-(function () {
+test('Complex routes work', function () {
     var r = new Rlite();
 
     r.add('hey/:name/new', function (r) {
@@ -69,10 +61,9 @@
     });
 
     r.run('hey/chris/last/davies');
-})();
+});
 
-// Query strings override other params
-(function () {
+test('Query strings override other params', function () {
     var r = new Rlite();
 
     r.add('hey/:name/new', function (r) {
@@ -88,10 +79,9 @@
     });
 
     r.run('hey/chris/last/davies?last=mayo&name=ham');
-})();
+});
 
-// Not found
-(function () {
+test('Not found', function () {
     var r = new Rlite();
 
     r.add('hey/:name', function (r) {
@@ -103,10 +93,9 @@
     }
 
     r.run('hoi/there');
-})();
+});
 
-// Leading slashes don't matter
-(function () {
+test('Leading slashes don\'t matter', function () {
     var r = new Rlite();
 
     r.add('hey/:name', function (r) {
@@ -114,10 +103,9 @@
     });
 
     r.run('/hey/chris');
-})();
+});
 
-// Default url
-(function () {
+test('Default url', function () {
     var r = new Rlite();
 
     r.add('', function (r) {
@@ -125,6 +113,4 @@
     });
 
     r.run('');
-})();
-
-document.title = 'DONE';
+});

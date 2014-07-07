@@ -1,4 +1,4 @@
 # rlite
 
-Tiny, light-weight JavaScript routing
+Tiny, light-weight JavaScript routing with zero dependencies.
 

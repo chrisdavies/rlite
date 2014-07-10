@@ -27,7 +27,12 @@ Rlite.prototype = {
     },
 
     run: function (url) {
-        url && url.length && url.charAt(0) == '/' && (url = url.substr(1, url.length));
+        if (url && url.length) {
+            url = url.replace('/?', '?');
+            url.charAt(0) == '/' && (url = url.substr(1, url.length));
+            url.length && url.charAt(url.length - 1) == '/' && (url = url.substr(0, url.length - 1));
+        }
+        
 
         var rules = this.rules,
             querySplit = url.split('?', 2),

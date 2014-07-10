@@ -114,3 +114,23 @@ test('Default url', function () {
 
     r.run('');
 });
+
+test('Trailing slash', function () {
+    var r = new Rlite();
+
+    r.add('hoi', function (r) {
+        ok(true);
+    });
+
+    r.run('hoi/');
+});
+
+test('Trailing slash with query', function () {
+    var r = new Rlite();
+
+    r.add('hoi', function (r) {
+        ok(true);
+    });
+
+    r.run('hoi/?there');
+});

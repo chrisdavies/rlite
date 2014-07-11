@@ -1,6 +1,5 @@
 function Rlite() {
     this.rules = {};
-    this.notFound = function () { };
 }
 
 Rlite.prototype = {
@@ -32,14 +31,13 @@ Rlite.prototype = {
             url.charAt(0) == '/' && (url = url.substr(1, url.length));
             url.length && url.charAt(url.length - 1) == '/' && (url = url.substr(0, url.length - 1));
         }
-        
 
         var rules = this.rules,
             querySplit = url.split('?', 2),
             pieces = querySplit[0].split('/', 50),
             params = {};
 
-        (function parseUrl () {
+        (function parseUrl() {
             for (var i = 0; i < pieces.length && rules; ++i) {
                 var piece = pieces[i],
                     lower = piece.toLowerCase(),
@@ -65,8 +63,9 @@ Rlite.prototype = {
 
         if (rules && rules['@']) {
             rules['@']({ url: url, params: params });
-        } else {
-            this.notFound(url);
+            return true;
         }
+
+        return false;
     }
 };

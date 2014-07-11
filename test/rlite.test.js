@@ -78,7 +78,7 @@ test('Query strings override other params', function () {
         ok(r.params.name == 'ham' && r.params.last == 'mayo');
     });
 
-    r.run('hey/chris/last/davies?last=mayo&name=ham');
+    ok(r.run('hey/chris/last/davies?last=mayo&name=ham'));
 });
 
 test('Not found', function () {
@@ -88,11 +88,7 @@ test('Not found', function () {
         throw 'Name called';
     });
 
-    r.notFound = function (url) {
-        ok(url == 'hoi/there');
-    }
-
-    r.run('hoi/there');
+    ok(!r.run('hoi/there'));
 });
 
 test('Leading slashes don\'t matter', function () {

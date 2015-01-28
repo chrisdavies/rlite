@@ -61,8 +61,15 @@ Rlite.prototype = {
             }
         })(querySplit.length == 2 ? querySplit[1] : '');
 
-        if (rules && rules['@']) {
-            rules['@']({ url: url, params: params });
+        if (rules && rules['@']) {            
+            if ( typeof rules['@'] === 'function' )
+            {
+                rules['@']({ url: url, params: params });
+            }
+            for ( i in rules['@'] )
+            {
+                rules['@'][ i ]({ url: url, params: params });
+            }
             return true;
         }
 

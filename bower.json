@@ -1,7 +1,7 @@
 {
   "name": "rlite",
   "main": "rlite.js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "homepage": "https://github.com/chrisdavies/rlite",
   "authors": [
     "Chris Davies <ferociousturtle@gmail.com>"
@@ -12,7 +12,7 @@
   ],
   "license": "MIT",
   "ignore": [
-    "**/.*",
+    ".gitignore",
     "node_modules",
     "bower_components",
     "test",

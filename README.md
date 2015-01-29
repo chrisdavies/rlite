@@ -93,7 +93,7 @@ Just download rlite.min.js, or use bower:
 
     bower install rlite
 
-## License
+## License MIT
 
 Copyright (c) 2015 Chris Davies
 

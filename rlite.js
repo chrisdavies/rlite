@@ -25,23 +25,21 @@ function Rlite() {
     },
 
     run: function(url) {
-      var rules = routes;
-      
       if (url && url.length) {
         url = url.replace('/?', '?');
-        url.charAt(0) == '/' && (url = url.substr(1, url.length));
-        url.length && url.charAt(url.length - 1) == '/' && (url = url.substr(0, url.length - 1));
+        url.charAt(0) == '/' && (url = url.slice(1));
+        url.length && url.slice(-1) == '/' && (url = url.slice(0, -1));
       }
 
-      var querySplit = url.split('?', 2),
+      var rules = routes,
+          querySplit = url.split('?', 2),
           pieces = querySplit[0].split('/', 50),
           params = {};
 
       (function parseUrl() {
         for (var i = 0; i < pieces.length && rules; ++i) {
           var piece = pieces[i],
-            lower = piece.toLowerCase(),
-            rule = rules[lower];
+              rule = rules[piece.toLowerCase()];
 
           if (!rule && (rule = rules[':'])) {
             params[rule['@name']] = piece;

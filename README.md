@@ -5,7 +5,7 @@ Tiny, light-weight JavaScript routing with zero dependencies.
 ## Usage
 Rlite does not come with any explicit tie into HTML5 push state or hash-change events, but these are easy enough to tie in based on your needs. Here's an example:
 
-    var r = new Rlite();
+    var r = Rlite();
 
     // Default route
     r.add('', function () {
@@ -41,7 +41,7 @@ Rlite does not come with any explicit tie into HTML5 push state or hash-change e
     window.addEventListener('hashchange', processHash);
     processHash();
 
-The previous examples should be relatively self-explantatory. Simple, parameterized routes are supported. Only relative URLs are supported. (So, instead of passing: 'http://example.com/users/1', pass '/users/1'). 
+The previous examples should be relatively self-explantatory. Simple, parameterized routes are supported. Only relative URLs are supported. (So, instead of passing: 'http://example.com/users/1', pass '/users/1').
 
 One other non-obvious thing is this: if there is a query parameter with the same name as a route parameter, it will override the route parameter. So given the following route definition:
 
@@ -52,6 +52,34 @@ If you pass the following URL:
     /users/chris?name=joe
 
 The value of params.name will be 'joe', not 'chris'.
+
+## Multiple Handlers
+
+If you want to have multiple handlers for the same route, you can
+include plugins/rlite-handlers.min.js, so your scripts might look like:
+
+    <script src="rlite.min.js"></script>
+    <script src="plugins/rlite-handlers.min.js"></scripts>
+
+You'd use it like this:
+
+    var r = Rlite();
+
+    function setTitle(r) {
+      document.title = r.params.name;
+    }
+
+    function logName(r) {
+      console.log(r.params.name);
+    }
+
+    r.add('example/:name', Rlite.handlers(setTitle, logName));
+
+## Installation
+
+Just download rlite.min.js, or use bower:
+
+    bower install rlite
 
 ## License
 

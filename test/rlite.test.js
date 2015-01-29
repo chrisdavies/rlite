@@ -9,6 +9,20 @@ test('Route parameter check', function() {
   r.run('hey/chris');
 });
 
+test('Route handling overwriting', function() {
+  var r = new Rlite();
+
+  r.add('hey/:name', function (r) {
+    ok(false, 'This should never run');
+  });
+
+  r.add('hey/:name', function(r) {
+    ok(r.params.name == 'chris');
+  });
+
+  r.run('hey/chris');
+});
+
 test('Other routes don\'t get confused', function() {
   var r = new Rlite();
 

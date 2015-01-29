@@ -58,14 +58,14 @@ The value of params.name will be 'joe', not 'chris'.
 By default, Rlite doesn't allow more than one handler per route. So, if
 you were to do this:
 
-  r.add('hey/:name', function (r) {
-    // This will never run because the
-    // next registration overwrites this one
-  });
+    r.add('hey/:name', function (r) {
+        // This will never run because the
+        // next registration overwrites this one
+    });
 
-  r.add('hey/:name', function(r) {
-    // This will run. Last one in wins!
-  });
+    r.add('hey/:name', function(r) {
+        // This will run. Last one in wins!
+    });
 
 If you want to have multiple handlers for the same route, you can
 include plugins/rlite-handlers.min.js, so your scripts might look like:

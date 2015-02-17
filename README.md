@@ -53,6 +53,16 @@ If you pass the following URL:
 
 The value of params.name will be 'joe', not 'chris'.
 
+## Handling 404s
+
+Rlite's run method returns true if the route matched and false if it didn't.
+
+So, you could do a 404 like this:
+
+    if (!r.run(hash.substr(1))) {
+      show404Page();
+    }
+
 ## Multiple Handlers
 
 By default, Rlite doesn't allow more than one handler per route. So, if

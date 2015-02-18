@@ -73,3 +73,8 @@ function Rlite() {
 
   return self;
 }
+
+// Browserify (CommonJS) compatible, check if we're not in the browser
+if (typeof(module) === 'object') {
+	module.exports = Rlite;
+}

@@ -53,6 +53,17 @@ If you pass the following URL:
 
 The value of params.name will be 'joe', not 'chris'.
 
+### Browserify
+This library is [CommonJS](http://www.commonjs.org/) compatible, so you can use it in this way:
+
+```javascript
+var Rlite = require('rlite'),
+routes = new Rlite();
+
+routes.add('', function () {
+...
+```
+
 ## Handling 404s
 
 Rlite's run method returns true if the route matched and false if it didn't.

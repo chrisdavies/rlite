@@ -8,7 +8,7 @@ function Rlite() {
 
       for (var i = 0; i < pieces.length; ++i) {
         var piece = pieces[i],
-            name = piece.length && piece.charAt(0) == ':' ? ':' : piece;
+            name = piece.charAt(0) == ':' ? ':' : piece;
 
         if (!rules[name]) {
           rules = (rules[name] = {});
@@ -28,7 +28,7 @@ function Rlite() {
       if (url && url.length) {
         url = url.replace('/?', '?');
         url.charAt(0) == '/' && (url = url.slice(1));
-        url.length && url.slice(-1) == '/' && (url = url.slice(0, -1));
+        url.slice(-1) == '/' && (url = url.slice(0, -1));
       }
 
       var rules = routes,
@@ -75,6 +75,6 @@ function Rlite() {
 }
 
 // Browserify (CommonJS) compatible, check if we're not in the browser
-if (typeof(module) === 'object' && typeof(define) !== 'function') {
-    module.exports = Rlite;
+if (typeof module === 'object' && typeof define !== 'function') {
+  module.exports = Rlite;
 }

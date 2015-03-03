@@ -167,3 +167,24 @@ test('Rlite.handlers calls each handler', function() {
   ok(h1Ran);
   ok(h2Ran);
 });
+
+test('Encoded params', function() {
+  var r = new Rlite();
+
+  r.add(':hey', function(r) {
+    ok(r.params.hey === '/hoi/hai?hui');
+  });
+  r.run(encodeURIComponent('/hoi/hai?hui'));
+
+  r.add('', function(r) {
+    ok(r.params.hey === '/hoi/hai');
+  });
+  r.run('/?hey=' + encodeURIComponent('/hoi/hai'));
+
+  r.add('/more-complex/:hey', function(r) {
+    ok(r.params.hey === '/hoi/hai?hui');
+    ok(r.params.hui === '/hoi/hai');
+  });
+
+  r.run('/more-complex/' + encodeURIComponent('/hoi/hai?hui') + '?hui=' + encodeURIComponent('/hoi/hai'));
+});

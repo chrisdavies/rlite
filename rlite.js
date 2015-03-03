@@ -38,7 +38,7 @@ function Rlite() {
 
       (function parseUrl() {
         for (var i = 0; i < pieces.length && rules; ++i) {
-          var piece = pieces[i],
+          var piece = decodeURIComponent(pieces[i]),
               rule = rules[piece.toLowerCase()];
 
           if (!rule && (rule = rules[':'])) {
@@ -55,7 +55,7 @@ function Rlite() {
         for (var i = 0; i < query.length; ++i) {
           var nameValue = query[i].split('=', 2);
 
-          nameValue.length == 2 && (params[nameValue[0]] = nameValue[1]);
+          nameValue.length == 2 && (params[nameValue[0]] = decodeURIComponent(nameValue[1]));
         }
       })(querySplit.length == 2 ? querySplit[1] : '');
 

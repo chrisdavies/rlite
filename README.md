@@ -114,6 +114,11 @@ Just download rlite.min.js, or use bower:
 
     bower install rlite
 
+Or use npm:
+https://www.npmjs.com/package/rlite-router
+
+    npm install --save rlite-router
+
 ## License MIT
 
 Copyright (c) 2015 Chris Davies

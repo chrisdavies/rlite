@@ -1,5 +1,6 @@
 function Rlite() {
-  var routes = {};
+  var routes = {},
+      decode = decodeURIComponent;
 
   var self = {
     add: function(route, handler) {
@@ -38,7 +39,7 @@ function Rlite() {
 
       (function parseUrl() {
         for (var i = 0; i < pieces.length && rules; ++i) {
-          var piece = decodeURIComponent(pieces[i]),
+          var piece = decode(pieces[i]),
               rule = rules[piece.toLowerCase()];
 
           if (!rule && (rule = rules[':'])) {
@@ -55,7 +56,7 @@ function Rlite() {
         for (var i = 0; i < query.length; ++i) {
           var nameValue = query[i].split('=', 2);
 
-          nameValue.length == 2 && (params[nameValue[0]] = decodeURIComponent(nameValue[1]));
+          nameValue.length == 2 && (params[nameValue[0]] = decode(nameValue[1]));
         }
       })(querySplit.length == 2 ? querySplit[1] : '');
 

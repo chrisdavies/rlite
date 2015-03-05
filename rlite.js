@@ -2,23 +2,19 @@ function Rlite() {
   var routes = {},
       decode = decodeURIComponent;
 
-  var self = {
+  return {
     add: function(route, handler) {
       var pieces = route.split('/'),
           rules = routes;
 
       for (var i = 0; i < pieces.length; ++i) {
         var piece = pieces[i],
-            name = piece.charAt(0) == ':' ? ':' : piece;
+            name = piece[0] == ':' ? ':' : piece;
 
-        if (!rules[name]) {
-          rules = (rules[name] = {});
+        rules = rules[name] || (rules[name] = {});
 
-          if (name == ':') {
-            rules['@name'] = piece.slice(1);
-          }
-        } else {
-          rules = rules[name];
+        if (name == ':') {
+          rules['@name'] = piece.slice(1);
         }
       }
 
@@ -26,39 +22,38 @@ function Rlite() {
     },
 
     run: function(url) {
-      if (url && url.length) {
+      if (url !== '') {
         url = url.replace('/?', '?');
-        url.charAt(0) == '/' && (url = url.slice(1));
+        url[0] == '/' && (url = url.slice(1));
         url.slice(-1) == '/' && (url = url.slice(0, -1));
       }
 
       var rules = routes,
-          querySplit = url.split('?', 2),
-          pieces = querySplit[0].split('/', 50),
+          querySplit = url.split('?'),
+          pieces = querySplit[0].split('/'),
           params = {};
 
-      (function parseUrl() {
-        for (var i = 0; i < pieces.length && rules; ++i) {
-          var piece = decode(pieces[i]),
-              rule = rules[piece.toLowerCase()];
+      // Parse the non-query portion of the URL...
+      for (var i = 0; i < pieces.length && rules; ++i) {
+        var piece = decode(pieces[i]),
+            rule = rules[piece.toLowerCase()];
 
-          if (!rule && (rule = rules[':'])) {
-            params[rule['@name']] = piece;
-          }
-
-          rules = rule;
+        if (!rule && (rule = rules[':'])) {
+          params[rule['@name']] = piece;
         }
-      })();
+
+        rules = rule;
+      }
 
       (function parseQuery(q) {
-        var query = q.split('&', 50);
+        var query = q.split('&');
 
         for (var i = 0; i < query.length; ++i) {
-          var nameValue = query[i].split('=', 2);
+          var nameValue = query[i].split('=');
 
-          nameValue.length == 2 && (params[nameValue[0]] = decode(nameValue[1]));
+          nameValue.length > 1 && (params[nameValue[0]] = decode(nameValue[1]));
         }
-      })(querySplit.length == 2 ? querySplit[1] : '');
+      })(querySplit.length > 1 ? querySplit[1] : '');
 
       if (rules && rules['@']) {
         rules['@']({
@@ -71,8 +66,6 @@ function Rlite() {
       return false;
     }
   };
-
-  return self;
 }
 
 // Browserify (CommonJS) compatible, check if we're not in the browser

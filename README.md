@@ -119,6 +119,10 @@ https://www.npmjs.com/package/rlite-router
 
     npm install --save rlite-router
 
+## Minified using
+
+    uglifyjs rlite.js --source-map rlite.min.js.map -m -c -o rlite.min.js
+
 ## License MIT
 
 Copyright (c) 2015 Chris Davies

@@ -57,7 +57,7 @@ The value of params.name will be 'joe', not 'chris'.
 This library is [CommonJS](http://www.commonjs.org/) compatible, so you can use it in this way:
 
 ```javascript
-var Rlite = require('rlite'),
+var Rlite = require('rlite-router'),
 routes = new Rlite();
 
 routes.add('', function () {

@@ -43,6 +43,8 @@ Rlite does not come with any explicit tie into HTML5 push state or hash-change e
 
 The previous examples should be relatively self-explantatory. Simple, parameterized routes are supported. Only relative URLs are supported. (So, instead of passing: 'http://example.com/users/1', pass '/users/1').
 
+Routes are not case sensitive, so `'Users/:name'` will resolve to `'users/:name'` 
+
 One other non-obvious thing is this: if there is a query parameter with the same name as a route parameter, it will override the route parameter. So given the following route definition:
 
     /users/:name

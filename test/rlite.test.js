@@ -9,6 +9,16 @@ test('Route parameter check', function() {
   r.run('hey/chris');
 });
 
+test('Route with uppercase letters', function() {
+  var r = new Rlite();
+
+  r.add('Hey/:name', function(r) {
+    ok(r.params.name == 'chris');
+  });
+
+  r.run('hey/chris');
+});
+
 test('Route handling overwriting', function() {
   var r = new Rlite();
 

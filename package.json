@@ -1,6 +1,6 @@
 {
   "name": "rlite-router",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A very tiny, fast client-side router",
   "main": "rlite.js",
   "directories": {},

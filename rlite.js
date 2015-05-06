@@ -73,7 +73,7 @@ function Rlite() {
 
   if (define && define.amd) {
     define([], factory);
-  } else if (module && module.exports) {
+  } else if (typeof module !== 'undefined' && module.exports) {
     module.exports = factory();
   }
 }(this, function () { return Rlite; }));

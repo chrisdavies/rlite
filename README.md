@@ -1,41 +1,46 @@
 # rlite
 
-Tiny, light-weight JavaScript routing with zero dependencies.
+Tiny, fast, light-weight JavaScript routing with zero dependencies.
+
+- No performance drop as you add routes
+- Order of route declaration doesn't matter: the most specific route wins
+- Roughly 600 bytes minified and gzipped
 
 ## Usage
+
 Rlite does not come with any explicit tie into HTML5 push state or hash-change events, but these are easy enough to tie in based on your needs. Here's an example:
 
     var r = Rlite();
 
     // Default route
     r.add('', function () {
-        document.title = 'Home';
+      document.title = 'Home';
     });
 
     // #inbox
     r.add('inbox', function () {
-        document.title = 'In';
+      document.title = 'In';
     });
 
     // #sent?to=john -> r.params.to will equal 'john'
     r.add('sent', function (r) {
-        document.title = 'Out ' + r.params.to;
+      document.title = 'Out ' + r.params.to;
     });
 
     // #users/chris -> r.params.name will equal 'chris'
     r.add('users/:name', function (r) {
-        document.title = 'User ' + r.params.name;
+      document.title = 'User ' + r.params.name;
     });
 
     // #logout
     r.add('logout', function () {
-        document.title = 'Logout';
+      document.title = 'Logout';
     });
 
     // Hash-based routing
     function processHash() {
-        var hash = location.hash || '#';
-        r.run(hash.substr(1));
+      var hash = location.hash || '#';
+      r.run(hash.substr(1));
     }
 
     window.addEventListener('hashchange', processHash);
@@ -56,6 +61,7 @@ If you pass the following URL:
 The value of params.name will be 'joe', not 'chris'.
 
 ### Browserify
+
 This library is [CommonJS](http://www.commonjs.org/) compatible, so you can use it in this way:
 
 ```javascript

@@ -39,7 +39,7 @@ function Rlite() {
       var hash = url.indexOf('#'),
           esc = url.indexOf('%') >= 0 ? decode : noop,
           query = hash >= 0
-                  ? url.substring(0, hash).split('&')
+                  ? url.slice(0, hash).split('&')
                   : url.split('&');
 
       for (var i = 0; i < query.length; ++i) {
@@ -69,26 +69,18 @@ function Rlite() {
       rules['@'] = handler;
     },
 
-    run: function(url, mock) {
+    run: function(url) {
       url = sanitize(url);
 
       var querySplit = url.split('?'),
-          result = processUrl(querySplit[0]);
+          result = processUrl(querySplit[0]) || {};
 
-      if (!result || !result.cb) {
-        return false;
-      }
-      
-      if (!mock) {
-        processQuery(querySplit[1], result.params);
-  
-        result.cb({
-          url: url,
-          params: result.params
-        });
-      }
+      result.cb && processQuery(querySplit[1], result.params) && result.cb({
+        url: url,
+        params: result.params
+      });
 
-      return true;
+      return !!result.cb;
     }
   };
 }

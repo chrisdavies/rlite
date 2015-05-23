@@ -6,6 +6,8 @@ Tiny, [fast](http://jsperf.com/rlite/2), light-weight JavaScript routing with ze
 - Order of route declaration doesn't matter: the most specific route wins
 - Roughly 600 bytes minified and gzipped
 
+[![Build Status](https://travis-ci.org/chrisdavies/rlite.svg?branch=master)](https://travis-ci.org/chrisdavies/rlite)
+
 ## Usage
 
 Rlite does not come with any explicit tie into HTML5 push state or hash-change events, but these are easy enough to tie in based on your needs. Here's an example:

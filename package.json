@@ -4,7 +4,9 @@
   "description": "A very tiny, fast client-side router",
   "main": "rlite.js",
   "directories": {},
-  "scripts": {},
+  "scripts": {
+    "test": "jasmine-node test/*.spec.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/chrisdavies/rlite"
@@ -17,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/chrisdavies/rlite/issues"
   },
-  "homepage": "https://github.com/chrisdavies/rlite"
+  "homepage": "https://github.com/chrisdavies/rlite",
+  "devDependencies": {
+    "jasmine-node": "^1.14.5"
+  }
 }

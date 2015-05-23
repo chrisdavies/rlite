@@ -1,6 +1,6 @@
 // This library started as an experiment to see how small I could make
 // a functional router. It has since been optimized (and thus grown).
-// The redunancy and inelegance here is for the sake of either size
+// The redundancy and inelegance here is for the sake of either size
 // or speed.
 function Rlite() {
   var routes = {},
@@ -25,7 +25,7 @@ function Rlite() {
     for (var i = 0; i < pieces.length && rules; ++i) {
       var piece = esc(pieces[i]);
       rules = rules[piece.toLowerCase()] || rules[':'];
-      rules && (params[rules[':']] = piece);
+      rules && rules[':'] && (params[rules[':']] = piece);
     }
 
     return rules && {
@@ -36,8 +36,11 @@ function Rlite() {
 
   function processQuery(url, params) {
     if (url) {
-      var esc = url.indexOf('%') >= 0 ? decode : noop,
-          query = url.split('&');
+      var hash = url.indexOf('#'),
+          esc = url.indexOf('%') >= 0 ? decode : noop,
+          query = hash >= 0
+                  ? url.substring(0, hash).split('&')
+                  : url.split('&');
 
       for (var i = 0; i < query.length; ++i) {
         var nameValue = query[i].split('=');
@@ -66,7 +69,7 @@ function Rlite() {
       rules['@'] = handler;
     },
 
-    run: function(url) {
+    run: function(url, mock) {
       url = sanitize(url);
 
       var querySplit = url.split('?'),
@@ -75,13 +78,15 @@ function Rlite() {
       if (!result || !result.cb) {
         return false;
       }
-
-      processQuery(querySplit[1], result.params);
-
-      result.cb({
-        url: url,
-        params: result.params
-      });
+      
+      if (!mock) {
+        processQuery(querySplit[1], result.params);
+  
+        result.cb({
+          url: url,
+          params: result.params
+        });
+      }
 
       return true;
     }

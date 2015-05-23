@@ -34,22 +34,26 @@ function Rlite() {
     };
   }
 
-  function processQuery(url, params) {
+  function processQuery(url, ctx) {
     if (url) {
       var hash = url.indexOf('#'),
           esc = url.indexOf('%') >= 0 ? decode : noop,
-          query = hash >= 0
-                  ? url.slice(0, hash).split('&')
-                  : url.split('&');
+          query = (hash < 0 ? url : url.slice(0, hash)).split('&');
 
       for (var i = 0; i < query.length; ++i) {
         var nameValue = query[i].split('=');
 
-        params[nameValue[0]] = esc(nameValue[1]);
+        ctx.params[nameValue[0]] = esc(nameValue[1]);
       }
     }
 
-    return params;
+    return ctx;
+  }
+
+  function lookup(url) {
+    var querySplit = sanitize(url).split('?');
+
+    return processQuery(querySplit[1], processUrl(querySplit[0]) || {});
   }
 
   return {
@@ -69,13 +73,14 @@ function Rlite() {
       rules['@'] = handler;
     },
 
+    exists: function (url) {
+      return !!lookup(url).cb;
+    },
+
     run: function(url) {
-      url = sanitize(url);
+      var result = lookup(url);
 
-      var querySplit = url.split('?'),
-          result = processUrl(querySplit[0]) || {};
-
-      result.cb && processQuery(querySplit[1], result.params) && result.cb({
+      result.cb && result.cb({
         url: url,
         params: result.params
       });

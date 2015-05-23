@@ -21,6 +21,18 @@
       r.run('stuff');
     });
 
+    it('Lets users check for existing routes', function () {
+      var r = new Rlite();
+
+      r.add('stuff', function () {});
+
+      expect(r.exists('/stuff/')).toBeTruthy();
+      expect(r.exists('stuff/')).toBeTruthy();
+      expect(r.exists('/stuff')).toBeTruthy();
+      expect(r.exists('stuff')).toBeTruthy();
+      expect(r.exists('nopes')).toBeFalsy();
+    });
+
     it('Handles route params', function() {
       var r = new Rlite();
 

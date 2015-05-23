@@ -84,6 +84,12 @@ So, you could do a 404 like this:
       show404Page();
     }
 
+## Checking to see if there is already a handler for a URL
+
+```javascript
+r.exists('/some/url/here'); // returns true if there is a matching handler
+```
+
 ## Multiple Handlers
 
 By default, Rlite doesn't allow more than one handler per route. So, if

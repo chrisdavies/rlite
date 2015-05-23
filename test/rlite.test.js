@@ -1,4 +1,24 @@
 ﻿
+test('Hashes are not part of query value', function () {
+  var r = new Rlite();
+
+  r.add('stuff', function (r) {
+    ok(r.params.name == 'value');
+  });
+
+  r.run('stuff?name=value#baz');
+});
+
+test('Routes with no params give an empty params object', function () {
+  var r = new Rlite();
+
+  r.add('stuff', function (r) {
+    ok(!Object.keys(r.params).length);
+  });
+
+  r.run('stuff');
+});
+
 test('Route parameter check', function() {
   var r = new Rlite();
 

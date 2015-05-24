@@ -135,9 +135,18 @@ https://www.npmjs.com/package/rlite-router
 
     npm install --save rlite-router
 
-## Minified using
+## Contributing
 
-    uglifyjs rlite.js --source-map rlite.min.js.map -m -c -o rlite.min.js
+Make your changes (and add tests), then run the tests:
+
+    npm test
+
+If all is well, build your changes:
+
+    npm run min
+
+This minifies rlite, and tells you the size. It's currently just under 700
+bytes, and I'd like to keep it that way!
 
 ## License MIT
 

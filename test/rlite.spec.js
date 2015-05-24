@@ -149,7 +149,7 @@
         throw new Error('Name called');
       });
 
-      expect(r.run('hoi/there')).toBeFalsy();
+      expect(r.run('hoi/there?hi=there')).toBeFalsy();
     });
 
     it('Ignores leading slashes', function() {

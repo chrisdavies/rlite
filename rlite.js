@@ -9,16 +9,15 @@ function Rlite() {
   function noop(s) { return s; }
 
   function sanitize(url) {
-    url.indexOf('/?') >= 0 && (url = url.replace('/?', '?'));
+    ~url.indexOf('/?') && (url = url.replace('/?', '?'));
     url[0] == '/' && (url = url.slice(1));
     url[url.length - 1] == '/' && (url = url.slice(0, -1));
 
     return url;
   }
 
-  function processUrl(url) {
-    var esc = url.indexOf('%') >= 0 ? decode : noop,
-        pieces = url.split('/'),
+  function processUrl(url, esc) {
+    var pieces = url.split('/'),
         rules = routes,
         params = {};
 
@@ -34,10 +33,9 @@ function Rlite() {
     };
   }
 
-  function processQuery(url, ctx) {
-    if (url && ctx.params) {
+  function processQuery(url, ctx, esc) {
+    if (url && ctx.cb) {
       var hash = url.indexOf('#'),
-          esc = url.indexOf('%') >= 0 ? decode : noop,
           query = (hash < 0 ? url : url.slice(0, hash)).split('&');
 
       for (var i = 0; i < query.length; ++i) {
@@ -51,9 +49,10 @@ function Rlite() {
   }
 
   function lookup(url) {
-    var querySplit = sanitize(url).split('?');
+    var querySplit = sanitize(url).split('?'),
+        esc = ~url.indexOf('%') ? decode : noop;
 
-    return processQuery(querySplit[1], processUrl(querySplit[0]) || {});
+    return processQuery(querySplit[1], processUrl(querySplit[0], esc) || {}, esc);
   }
 
   return {

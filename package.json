@@ -1,11 +1,12 @@
 {
   "name": "rlite-router",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "A very tiny, fast client-side router",
   "main": "rlite.js",
   "directories": {},
   "scripts": {
-    "test": "jasmine-node test/*.spec.js"
+    "test": "jasmine-node test/*.spec.js",
+    "min": "uglifyjs rlite.js --source-map rlite.min.js.map -m -c -o rlite.min.js && echo 'Minified size' && uglifyjs rlite.js | gzip -9f | wc -c"
   },
   "repository": {
     "type": "git",

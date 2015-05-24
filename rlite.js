@@ -35,7 +35,7 @@ function Rlite() {
   }
 
   function processQuery(url, ctx) {
-    if (url) {
+    if (url && ctx.params) {
       var hash = url.indexOf('#'),
           esc = url.indexOf('%') >= 0 ? decode : noop,
           query = (hash < 0 ? url : url.slice(0, hash)).split('&');

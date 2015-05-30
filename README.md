@@ -44,7 +44,7 @@ Rlite does not come with any explicit tie into HTML5 push state or hash-change e
     // Hash-based routing
     function processHash() {
       var hash = location.hash || '#';
-      r.run(hash.substr(1));
+      r.run(hash.slice(1));
     }
 
     window.addEventListener('hashchange', processHash);

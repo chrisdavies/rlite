@@ -75,6 +75,8 @@ function Rlite() {
     exists: function (url) {
       return !!lookup(url).cb;
     },
+    
+    lookup: lookup,
 
     run: function(url) {
       var result = lookup(url);

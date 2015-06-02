@@ -64,6 +64,9 @@ If you pass the following URL:
 
 The value of params.name will be 'joe', not 'chris'.
 
+You can also use it as a pattern matcher trough `lookup`. It works like the router but instead of
+calling the registered callback it returns an object with the callback and the matched params.
+
 ### Browserify
 
 This library is [CommonJS](http://www.commonjs.org/) compatible, so you can use it in this way:

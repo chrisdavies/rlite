@@ -153,6 +153,10 @@ If all is well, build your changes:
 This minifies rlite, and tells you the size. It's currently just under 700
 bytes, and I'd like to keep it that way!
 
+## Status
+
+Rlite is being actively maintained, but is pretty much feature complete, with the possible exception of support for wildcard routes. Generally, I avoid repos that look stale (no recent activity), but in this case, the reason for inactivity is that library is stable and complete.
+
 ## License MIT
 
 Copyright (c) 2015 Chris Davies

@@ -14,41 +14,43 @@ Tiny, [fast](http://jsperf.com/rlite/2), light-weight JavaScript routing with ze
 
 Rlite does not come with any explicit tie into HTML5 push state or hash-change events, but these are easy enough to tie in based on your needs. Here's an example:
 
-    var r = Rlite();
+```js
+var r = Rlite();
 
-    // Default route
-    r.add('', function () {
-      document.title = 'Home';
-    });
+// Default route
+r.add('', function () {
+  document.title = 'Home';
+});
 
-    // #inbox
-    r.add('inbox', function () {
-      document.title = 'In';
-    });
+// #inbox
+r.add('inbox', function () {
+  document.title = 'In';
+});
 
-    // #sent?to=john -> r.params.to will equal 'john'
-    r.add('sent', function (r) {
-      document.title = 'Out ' + r.params.to;
-    });
+// #sent?to=john -> r.params.to will equal 'john'
+r.add('sent', function (r) {
+  document.title = 'Out ' + r.params.to;
+});
 
-    // #users/chris -> r.params.name will equal 'chris'
-    r.add('users/:name', function (r) {
-      document.title = 'User ' + r.params.name;
-    });
+// #users/chris -> r.params.name will equal 'chris'
+r.add('users/:name', function (r) {
+  document.title = 'User ' + r.params.name;
+});
 
-    // #logout
-    r.add('logout', function () {
-      document.title = 'Logout';
-    });
+// #logout
+r.add('logout', function () {
+  document.title = 'Logout';
+});
 
-    // Hash-based routing
-    function processHash() {
-      var hash = location.hash || '#';
-      r.run(hash.slice(1));
-    }
+// Hash-based routing
+function processHash() {
+  var hash = location.hash || '#';
+  r.run(hash.slice(1));
+}
+```
 
-    window.addEventListener('hashchange', processHash);
-    processHash();
+window.addEventListener('hashchange', processHash);
+processHash();
 
 The previous examples should be relatively self-explantatory. Simple, parameterized routes are supported. Only relative URLs are supported. (So, instead of passing: 'http://example.com/users/1', pass '/users/1').
 
@@ -152,6 +154,10 @@ If all is well, build your changes:
 
 This minifies rlite, and tells you the size. It's currently just under 700
 bytes, and I'd like to keep it that way!
+
+## Status
+
+Rlite is being actively maintained, but is pretty much feature complete, with the possible exception of support for wildcard routes. Generally, I avoid repos that look stale (no recent activity), but in this case, the reason for inactivity is that library is stable and complete.
 
 ## License MIT
 

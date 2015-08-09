@@ -188,6 +188,18 @@
       expect(ran).toBeTruthy();
     });
 
+    it('Handles multiple params in a row', function() {
+      var r = new Rlite();
+
+      r.add('hey/:hello/:world', function(r) {
+        expect(r.params.hello).toEqual('a');
+        expect(r.params.world).toEqual('b');
+      });
+
+      r.run('hey/a/b');
+    });
+
+
     it('Handles trailing slash with query', function() {
       var r = new Rlite(),
           ran = false;

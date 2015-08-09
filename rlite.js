@@ -24,7 +24,7 @@ function Rlite() {
     for (var i = 0; i < pieces.length && rules; ++i) {
       var piece = esc(pieces[i]);
       rules = rules[piece.toLowerCase()] || rules[':'];
-      rules && rules[':'] && (params[rules[':']] = piece);
+      rules && rules['~'] && (params[rules['~']] = piece);
     }
 
     return rules && {
@@ -66,7 +66,7 @@ function Rlite() {
 
         rules = rules[name] || (rules[name] = {});
 
-        name == ':' && (rules[':'] = piece.slice(1));
+        name == ':' && (rules['~'] = piece.slice(1));
       }
 
       rules['@'] = handler;

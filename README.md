@@ -47,10 +47,10 @@ function processHash() {
   var hash = location.hash || '#';
   r.run(hash.slice(1));
 }
-```
 
 window.addEventListener('hashchange', processHash);
 processHash();
+```
 
 The previous examples should be relatively self-explantatory. Simple, parameterized routes are supported. Only relative URLs are supported. (So, instead of passing: 'http://example.com/users/1', pass '/users/1').
 

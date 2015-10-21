@@ -47,10 +47,10 @@ function processHash() {
   var hash = location.hash || '#';
   r.run(hash.slice(1));
 }
-```
 
 window.addEventListener('hashchange', processHash);
 processHash();
+```
 
 The previous examples should be relatively self-explantatory. Simple, parameterized routes are supported. Only relative URLs are supported. (So, instead of passing: 'http://example.com/users/1', pass '/users/1').
 
@@ -102,14 +102,16 @@ r.exists('/some/url/here'); // returns true if there is a matching handler
 By default, Rlite doesn't allow more than one handler per route. So, if
 you were to do this:
 
-    r.add('hey/:name', function (r) {
-        // This will never run because the
-        // next registration overwrites this one
-    });
+```javascript
+r.add('hey/:name', function (r) {
+    // This will never run because the
+    // next registration overwrites this one
+});
 
-    r.add('hey/:name', function(r) {
-        // This will run. Last one in wins!
-    });
+r.add('hey/:name', function(r) {
+    // This will run. Last one in wins!
+});
+```
 
 If you want to have multiple handlers for the same route, you can
 include plugins/rlite-handlers.min.js, so your scripts might look like:
@@ -119,6 +121,7 @@ include plugins/rlite-handlers.min.js, so your scripts might look like:
 
 You'd use it like this:
 
+```javascript
     var r = Rlite();
 
     function setTitle(r) {
@@ -130,6 +133,7 @@ You'd use it like this:
     }
 
     r.add('example/:name', Rlite.handlers(setTitle, logName));
+```
 
 ## Installation
 

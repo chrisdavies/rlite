@@ -1,7 +1,7 @@
 {
   "name": "rlite",
   "main": "rlite.js",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "homepage": "https://github.com/chrisdavies/rlite",
   "authors": [
     "Chris Davies <ferociousturtle@gmail.com>"

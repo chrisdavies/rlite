@@ -43,15 +43,32 @@
       r.run('hey/chris');
     });
 
-    it('Handles uppercases', function() {
+    it('Handles different cases', function() {
       var r = new Rlite();
+      var count = 0;
 
       r.add('Hey/:name', function(r) {
         expect(r.params.name).toEqual('chris');
+        ++count;
+      });
+
+      r.add('hello/:firstName', function(r) {
+        expect(r.params.firstName).toEqual('jane');
+        ++count;
+      });
+
+      r.add('hoi/:FirstName/:LastName', function(r) {
+        expect(r.params.FirstName).toEqual('Joe');
+        expect(r.params.LastName).toEqual('Smith');
+        ++count;
       });
 
       r.run('hey/chris');
+      r.run('hello/jane');
+      r.run('hoi/Joe/Smith');
+      expect(count).toBe(3);
     });
+
 
     it('Should overwrite the same routes', function() {
       var r = new Rlite();

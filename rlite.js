@@ -67,12 +67,13 @@
 
     return {
       add: function(route, handler) {
-        var pieces = route.toLowerCase().split('/'),
+
+        var pieces = route.split('/'),
             rules = routes;
 
         for (var i = 0; i < pieces.length; ++i) {
           var piece = pieces[i],
-              name = piece[0] == ':' ? ':' : piece;
+              name = piece[0] == ':' ? ':' : piece.toLowerCase();
 
           rules = rules[name] || (rules[name] = {});
 

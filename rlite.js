@@ -1,94 +1,90 @@
-// This library started as an experiment to see how small I could make
-// a functional router. It has since been optimized (and thus grown).
-// The redundancy and inelegance here is for the sake of either size
-// or speed.
-(function (root, factory) {
-  var define = root.define;
+(function (root) {
+  function Rlite() {
+    var routes = {};
+    var decode = decodeURIComponent;
+    var paramMarker = ':';
+    var paramNameMarker = '~';
+    var callbackMarker = '@';
 
-  if (define && define.amd) {
-    define('rlite', [], factory);
-  } else if (typeof module !== 'undefined' && module.exports) {
-    module.exports = factory();
-  } else {
-    root.Rlite = factory();
-  }
-}(this, function () { return function() {
-    var routes = {},
-        decode = decodeURIComponent;
+    // Noop, technically an identity function
+    function noop(s) { return s }
 
-    function noop(s) { return s; }
-
+    // Removes trailing and leading slashes, taking query into account
     function sanitize(url) {
-      ~url.indexOf('/?') && (url = url.replace('/?', '?'));
-      url[0] == '/' && (url = url.slice(1));
-      url[url.length - 1] == '/' && (url = url.slice(0, -1));
-
-      return url;
+      return url.replace(/(^\/)|(\/$)|(\/)(\?.*)/g, '$4');
     }
 
-    function processUrl(url, esc) {
-      var pieces = url.split('/'),
-          rules = routes,
-          params = {};
+    // Processes the path portion of a URL, using the specified escape function
+    function processUrl(url) {
+      var pieces = url.split('/');
+      var rules = routes;
+      var params = {};
 
       for (var i = 0; i < pieces.length && rules; ++i) {
-        var piece = esc(pieces[i]);
-        rules = rules[piece.toLowerCase()] || rules[':'];
-        rules && rules['~'] && (params[rules['~']] = piece);
+        var piece = decode(pieces[i]);
+        rules = rules[piece.toLowerCase()] || rules[paramMarker];
+        rules && rules[paramNameMarker] && (params[rules[paramNameMarker]] = piece);
       }
 
       return rules && {
-        cb: rules['@'],
+        cb: rules[callbackMarker],
         params: params
       };
     }
 
-    function processQuery(url, ctx, esc) {
+    // Processes the query portion of the URL, using the specified route context
+    // and escape function.
+    function processQuery(url, ctx) {
       if (url && ctx.cb) {
-        var hash = url.indexOf('#'),
-            query = (hash < 0 ? url : url.slice(0, hash)).split('&');
+        var query = url.split('#', 1)[0].split('&');
 
         for (var i = 0; i < query.length; ++i) {
           var nameValue = query[i].split('=');
 
-          ctx.params[nameValue[0]] = esc(nameValue[1]);
+          ctx.params[nameValue[0]] = decode(nameValue[1]);
         }
       }
 
       return ctx;
     }
 
+    // Finds route that matches the specified URL.
     function lookup(url) {
-      var querySplit = sanitize(url).split('?'),
-          esc = ~url.indexOf('%') ? decode : noop;
+      var querySplit = sanitize(url).split('?');
 
-      return processQuery(querySplit[1], processUrl(querySplit[0], esc) || {}, esc);
+      return processQuery(querySplit[1], processUrl(querySplit[0]) || {});
     }
 
     return {
-      add: function(route, handler) {
-
-        var pieces = route.split('/'),
-            rules = routes;
+      // Adds the specified route handler to the router.
+      // route: a string like /users/:id
+      // handler: a callback to be run when the route is matched
+      add: function (route, handler) {
+        var pieces = route.split('/');
+        var rules = routes;
 
         for (var i = 0; i < pieces.length; ++i) {
-          var piece = pieces[i],
-              name = piece[0] == ':' ? ':' : piece.toLowerCase();
+          var piece = pieces[i];
+          var name = piece[0] == paramMarker ? paramMarker : piece.toLowerCase();
 
           rules = rules[name] || (rules[name] = {});
 
-          name == ':' && (rules['~'] = piece.slice(1));
+          name == paramMarker && (rules[paramNameMarker] = piece.slice(1));
         }
 
-        rules['@'] = handler;
+        rules[callbackMarker] = handler;
       },
 
+      // Determines if an existing route matches the specified URL
       exists: function (url) {
         return !!lookup(url).cb;
       },
 
+      // Looks up the specified URL in the router
       lookup: lookup,
 
+      // Runs the specified URL and calls the appropriate callback
+      // if a route is found.
       run: function(url) {
         var result = lookup(url);
 
@@ -99,6 +95,18 @@
 
         return !!result.cb;
       }
-    };
-  };
-}));
+    }
+  }
+
+
+  // JS modules support
+  var define = root.define;
+
+  if (define && define.amd) {
+    define('rlite', [], function () { return Rlite });
+  } else if (typeof module !== 'undefined' && module.exports) {
+    module.exports = Rlite;
+  } else {
+    root.Rlite = Rlite;
+  }
+}(this));

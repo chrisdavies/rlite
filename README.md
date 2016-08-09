@@ -163,6 +163,10 @@ bytes, and I'd like to keep it that way!
 
 Rlite is being actively maintained, but is pretty much feature complete, with the possible exception of support for wildcard routes. Generally, I avoid repos that look stale (no recent activity), but in this case, the reason for inactivity is that library is stable and complete.
 
+## Usage with React
+
+I've been using Rlite along with React and Redux. [Here's a write up on how that works.](https://github.com/chrisdavies/rlite/wiki/Using-with-React)
+
 ## License MIT
 
 Copyright (c) 2015 Chris Davies

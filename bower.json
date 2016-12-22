@@ -1,14 +1,14 @@
 {
   "name": "rlite",
   "main": "rlite.js",
-  "version": "1.1.3",
+  "version": "2.0.0",
   "homepage": "https://github.com/chrisdavies/rlite",
   "authors": [
     "Chris Davies <ferociousturtle@gmail.com>"
   ],
-  "description": "A very tiny, fast client-side router",
+  "description": "A tiny, fast client-side router",
   "keywords": [
-    "routing"
+    "routing", "router"
   ],
   "license": "MIT",
   "ignore": [

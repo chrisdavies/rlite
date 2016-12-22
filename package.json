@@ -1,7 +1,7 @@
 {
   "name": "rlite-router",
-  "version": "1.1.3",
-  "description": "A very tiny, fast client-side router",
+  "version": "2.0.0",
+  "description": "A tiny, fast client-side router",
   "main": "rlite.js",
   "directories": {},
   "scripts": {
@@ -13,7 +13,7 @@
     "url": "https://github.com/chrisdavies/rlite"
   },
   "keywords": [
-    "routing"
+    "routing", "router"
   ],
   "author": "Chris Davies <ferociousturtle@gmail.com>",
   "license": "MIT",
@@ -23,6 +23,6 @@
   "homepage": "https://github.com/chrisdavies/rlite",
   "devDependencies": {
     "jasmine-node": "^1.14.5",
-    "uglify-js": "^2.4.23"
+    "uglify-js": "^2.7.5"
   }
 }

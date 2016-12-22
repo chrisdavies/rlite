@@ -1,256 +1,205 @@
-(function (Rlite) {
+(function (rlite) {
   describe('Rlite', function () {
 
     it('Does not put hash values in query', function () {
-      var r = new Rlite();
+      const route = rlite(noop, {stuff: ({name}) => expect(name).toEqual('value')});
 
-      r.add('stuff', function (r) {
-        expect(r.params.name).toEqual('value');
-      });
-
-      r.run('stuff?name=value#baz');
+      route('stuff?name=value#baz');
     });
 
     it('Has empty params for parameterless routes', function () {
-      var r = new Rlite();
-
-      r.add('stuff', function (r) {
-        expect(Object.keys(r.params).length).toEqual(0);
+      const route = rlite(noop, {
+        stuff: (params) => expect(Object.keys(params).length).toEqual(0)
       });
 
-      r.run('stuff');
+      route('stuff');
     });
 
-    it('Lets users check for existing routes', function () {
-      var r = new Rlite();
+    it('Returns the result of the route', function () {
+      const route = rlite(noop, {
+        hi: () => 'Hello bob',
+        bye: () => 'Bye bob',
+      });
 
-      r.add('stuff', function () {});
+      expect(route('hi')).toEqual('Hello bob');
+      expect(route('bye')).toEqual('Bye bob');
+    });
 
-      expect(r.exists('/stuff/')).toBeTruthy();
-      expect(r.exists('stuff/')).toBeTruthy();
-      expect(r.exists('/stuff')).toBeTruthy();
-      expect(r.exists('stuff')).toBeTruthy();
-      expect(r.exists('nopes')).toBeFalsy();
+    it('It handles leading and trailing slashes and 404s', function () {
+      const route = rlite(() => 'Nope!', {
+        stuff: () => 'Yep!'
+      });
+
+      expect(route('/stuff/')).toEqual('Yep!');
+      expect(route('stuff/')).toEqual('Yep!');
+      expect(route('/stuff')).toEqual('Yep!');
+      expect(route('stuff')).toEqual('Yep!');
+      expect(route('nopes')).toEqual('Nope!');
     });
 
     it('Handles route params', function() {
-      var r = new Rlite();
-
-      r.add('hey/:name', function(r) {
-        expect(r.params.name).toEqual('chris');
+      const route = rlite(noop, {
+        'hey/:name': ({name}) => expect(name).toEqual('chris')
       });
 
-      r.run('hey/chris');
+      route('hey/chris');
     });
 
     it('Handles different cases', function() {
-      var r = new Rlite();
-      var count = 0;
-
-      r.add('Hey/:name', function(r) {
-        expect(r.params.name).toEqual('chris');
-        ++count;
+      let count = 0;
+      const route = rlite(noop, {
+        'Hey/:name': ({name}) => {
+          expect(name).toEqual('chris');
+          ++count;
+        },
+        'hello/:firstName': ({firstName}) => {
+          expect(firstName).toEqual('jane');
+          ++count;
+        },
+        'hoi/:FirstName/:LastName': ({FirstName, LastName}) => {
+          expect(FirstName).toEqual('Joe');
+          expect(LastName).toEqual('Smith');
+          ++count;
+        }
       });
 
-      r.add('hello/:firstName', function(r) {
-        expect(r.params.firstName).toEqual('jane');
-        ++count;
-      });
-
-      r.add('hoi/:FirstName/:LastName', function(r) {
-        expect(r.params.FirstName).toEqual('Joe');
-        expect(r.params.LastName).toEqual('Smith');
-        ++count;
-      });
-
-      r.run('hey/chris');
-      r.run('hello/jane');
-      r.run('hoi/Joe/Smith');
+      route('hey/chris');
+      route('hello/jane');
+      route('hoi/Joe/Smith');
       expect(count).toBe(3);
     });
 
-
-    it('Should overwrite the same routes', function() {
-      var r = new Rlite();
-
-      r.add('hey/:name', function (r) {
-        throw new Error('First route should not run');
+    it('Passes the argument and url through', function() {
+      const route = rlite(noop, {
+        'hey/:name': ({name}, arg, url) => {
+          expect(arg).toEqual('Wut');
+          expect(name).toEqual('You');
+          expect(url).toEqual('hey/You');
+        }
       });
 
-      r.add('hey/:name', function(r) {
-        expect(r.params.name).toEqual('chris');
-      });
-
-      r.run('hey/chris');
+      route('hey/You', 'Wut');
     });
 
     it('Matches root routes correctly', function() {
-      var r = new Rlite();
-
-      r.add('hey/:name/new', function(r) {
-        throw new Error('New called');
+      const route = rlite(noop, {
+        'hey/:name/new': () => {throw new Error('New called');},
+        'hey/:name': ({name}) => expect(name).toEqual('chris'),
+        'hey/:name/edit': () => {throw new Error('Edit called');},
       });
 
-      r.add('hey/:name', function(r) {
-        expect(r.params.name).toEqual('chris');
-      });
-
-      r.add('hey/:name/edit', function(r) {
-        throw new Error('Edit called');
-      });
-
-      r.run('hey/chris');
+      route('hey/chris');
     });
 
     it('Understands specificity', function() {
-      var r = new Rlite();
-
-      r.add('hey/joe', function(r) {
-        expect(r.url).toEqual('hey/joe');
+      const route = rlite(noop, {
+        'hey/joe': (_1, _2, url) => expect(url).toEqual('hey/joe'),
+        'hey/:name': () => {throw new Error('Name called')},
+        'hey/jane': (_1, _2, url) => expect(url).toEqual('hey/jane'),
       });
 
-      r.add('hey/:name', function(r) {
-        throw new Error('New called');
-      });
-
-      r.add('hey/jane', function(r) {
-        expect(r.url).toEqual('hey/jane');
-      });
-
-      r.run('hey/joe');
-      r.run('hey/jane');
+      route('hey/joe');
+      route('hey/jane');
     });
 
     it('Handles complex routes', function() {
-      var r = new Rlite();
-
-      r.add('hey/:name/new', function(r) {
-        throw new Error('New called');
+      const route = rlite(noop, {
+        'hey/:name/new': () => {throw new Error('New called');},
+        'hey/:name': () => {throw new Error('Name called');},
+        'hey/:name/last/:last': () => ({name, last}) => {
+          expect(name).toEqual('chris');
+          expect(last).toEqual('davies');
+        }
       });
 
-      r.add('hey/:name', function(r) {
-        throw new Error('Name called');
-      });
-
-      r.add('hey/:name/last/:last', function(r) {
-        expect(r.params.name).toEqual('chris');
-        expect(r.params.last).toEqual('davies');
-      });
-
-      r.run('hey/chris/last/davies');
+      route('hey/chris/last/davies');
     });
 
     it('Overrides params with query string values', function() {
-      var r = new Rlite();
-
-      r.add('hey/:name/new', function(r) {
-        throw new Error('New called');
+      const route = rlite(noop, {
+        'hey/:name/new': () => {throw new Error('New called');},
+        'hey/:name': () => {throw new Error('Name called');},
+        'hey/:name/last/:last': function({name, last}) {
+          expect(name).toEqual('ham');
+          expect(last).toEqual('mayo');
+          return name + ' ' + last;
+        }
       });
 
-      r.add('hey/:name', function(r) {
-        throw new Error('Name called');
-      });
-
-      r.add('hey/:name/last/:last', function(r) {
-        expect(r.params.name).toEqual('ham');
-        expect(r.params.last).toEqual('mayo');
-      });
-
-      expect(r.run('hey/chris/last/davies?last=mayo&name=ham')).toBeTruthy();
+      expect(route('hey/chris/last/davies?last=mayo&name=ham')).toEqual('ham mayo');
     });
 
     it('Handles not founds', function() {
-      var r = new Rlite();
-
-      r.add('hey/:name', function(r) {
-        throw new Error('Name called');
+      const route = rlite(() => '404', {
+        'hey/:name': () => {throw new Error('Name called');}
       });
 
-      expect(r.run('hoi/there?hi=there')).toBeFalsy();
-    });
-
-    it('Ignores leading slashes', function() {
-      var r = new Rlite();
-
-      r.add('hey/:name', function(r) {
-        expect(r.params.name).toEqual('chris');
-      });
-
-      r.run('/hey/chris');
+      expect(route('hey?hi=there')).toEqual('404');
     });
 
     it('Handles default urls', function() {
-      var r = new Rlite(),
-          ran = false;
-
-      r.add('', function(r) {
-        ran = true;
+      const route = rlite(noop, {
+        '': () => 'HOME'
       });
 
-      r.run('');
-
-      expect(ran).toBeTruthy();
-    });
-
-    it('Handles trailing slashes', function() {
-      var r = new Rlite(),
-          ran = false;
-
-      r.add('hoi', function(r) {
-        ran = true;
-      });
-
-      r.run('hoi/');
-
-      expect(ran).toBeTruthy();
+      expect(route('')).toEqual('HOME');
     });
 
     it('Handles multiple params in a row', function() {
-      var r = new Rlite();
-
-      r.add('hey/:hello/:world', function(r) {
-        expect(r.params.hello).toEqual('a');
-        expect(r.params.world).toEqual('b');
+      const route = rlite(noop, {
+        'hey/:hello/:world': ({hello, world}) => {
+          expect(hello).toEqual('a');
+          expect(world).toEqual('b');
+        }
       });
 
-      r.run('hey/a/b');
+      route('hey/a/b');
     });
 
-
     it('Handles trailing slash with query', function() {
-      var r = new Rlite(),
-          ran = false;
-
-      r.add('hoi', function(r) {
-        expect(r.params.there).toEqual('yup');
-        ran = true;
+      const route = rlite(noop, {
+        'hoi': ({there}) => {
+          expect(there).toEqual('yup');
+          return 'Yeppers';
+        }
       });
 
-      r.run('hoi/?there=yup');
+      expect(route('hoi/?there=yup')).toEqual('Yeppers');
+    });
 
-      expect(ran).toBeTruthy();
+    it('Handles leading slashes in defs', function() {
+      const route = rlite(noop, {
+        '/hoi': () => 'GOT IT'
+      });
+
+      expect(route('hoi')).toEqual('GOT IT');
     });
 
     it('Encodes params', function() {
-      var r = new Rlite();
+      const route = rlite(noop, {
+        '': ({hey}) => {
+          expect(hey).toEqual('/what/now');
+          return 'HOME';
+        },
 
-      r.add(':hey', function(r) {
-        expect(r.params.hey).toEqual('/hoi/hai?hui');
+        ':hey': ({hey}) => {
+          expect(hey).toEqual('/hoi/hai?hui');
+          return ':hey';
+        },
+
+        'more-complex/:hey': ({hey, hui}) => {
+          expect(hey).toEqual('/hoi/hai?hui');
+          expect(hui).toEqual('/hoi/hai');
+          return 'LAST';
+        },
       });
-      r.run(encodeURIComponent('/hoi/hai?hui'));
 
-      r.add('', function(r) {
-        expect(r.params.hey).toEqual('/hoi/hai');
-      });
-      r.run('/?hey=' + encodeURIComponent('/hoi/hai'));
-
-      r.add('/more-complex/:hey', function(r) {
-        expect(r.params.hey).toEqual('/hoi/hai?hui');
-        expect(r.params.hui).toEqual('/hoi/hai');
-      });
-
-      r.run('/more-complex/' + encodeURIComponent('/hoi/hai?hui') + '?hui=' + encodeURIComponent('/hoi/hai'));
+      expect(route(encodeURIComponent('/hoi/hai?hui'))).toEqual(':hey');
+      expect(route('/?hey=' + encodeURIComponent('/what/now'))).toEqual('HOME');
+      expect(route('/more-complex/' + encodeURIComponent('/hoi/hai?hui') + '?hui=' + encodeURIComponent('/hoi/hai'))).toEqual('LAST');
     });
   });
+
+  function noop() { }
 
 })(this.Rlite || require('../rlite'));

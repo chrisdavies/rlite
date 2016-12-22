@@ -12,9 +12,20 @@
   } else {
     root.Rlite = factory();
   }
-}(this, function () { return function() {
-    var routes = {},
-        decode = decodeURIComponent;
+}(this, function () {
+  return function (notFound, routeDefinitions) {
+    var routes = {};
+    var decode = decodeURIComponent;
+
+    init();
+
+    return run;
+
+    function init() {
+      for (var key in routeDefinitions) {
+        add(key, routeDefinitions[key]);
+      }
+    };
 
     function noop(s) { return s; }
 
@@ -59,46 +70,32 @@
     }
 
     function lookup(url) {
-      var querySplit = sanitize(url).split('?'),
-          esc = ~url.indexOf('%') ? decode : noop;
+      var querySplit = sanitize(url).split('?');
+      var esc = ~url.indexOf('%') ? decode : noop;
 
       return processQuery(querySplit[1], processUrl(querySplit[0], esc) || {}, esc);
     }
 
-    return {
-      add: function(route, handler) {
+    function add(route, handler) {
+      var pieces = route.split('/');
+      var rules = routes;
 
-        var pieces = route.split('/'),
-            rules = routes;
+      for (var i = +(route[0] === '/'); i < pieces.length; ++i) {
+        var piece = pieces[i];
+        var name = piece[0] == ':' ? ':' : piece.toLowerCase();
 
-        for (var i = 0; i < pieces.length; ++i) {
-          var piece = pieces[i],
-              name = piece[0] == ':' ? ':' : piece.toLowerCase();
+        rules = rules[name] || (rules[name] = {});
 
-          rules = rules[name] || (rules[name] = {});
-
-          name == ':' && (rules['~'] = piece.slice(1));
-        }
-
-        rules['@'] = handler;
-      },
-
-      exists: function (url) {
-        return !!lookup(url).cb;
-      },
-
-      lookup: lookup,
-
-      run: function(url) {
-        var result = lookup(url);
-
-        result.cb && result.cb({
-          url: url,
-          params: result.params
-        });
-
-        return !!result.cb;
+        name == ':' && (rules['~'] = piece.slice(1));
       }
+
+      rules['@'] = handler;
+    }
+
+    function run(url, arg) {
+      var result = lookup(url);
+
+      return (result.cb || notFound)(result.params, arg, url);
     };
   };
 }));

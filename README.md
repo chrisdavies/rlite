@@ -5,7 +5,7 @@ Tiny, [fast](http://jsperf.com/rlite/2), light-weight JavaScript routing with ze
 - Zero dependencies
 - No performance drop as you add routes
 - Order of route declaration doesn't matter: the most specific route wins
-- Roughly 600 bytes minified and gzipped
+- Less than 600 bytes minified and gzipped
 - Parses query strings
 
 [![Build Status](https://travis-ci.org/chrisdavies/rlite.svg?branch=master)](https://travis-ci.org/chrisdavies/rlite)
@@ -14,38 +14,44 @@ Tiny, [fast](http://jsperf.com/rlite/2), light-weight JavaScript routing with ze
 
 Rlite does not come with any explicit tie into HTML5 push state or hash-change events, but these are easy enough to tie in based on your needs. Here's an example:
 
-```js
-var r = Rlite();
+```javascript
+const route = rlite(notFound, {
+  // Default route
+  '': function () {
+    return 'Home';
+  },
 
-// Default route
-r.add('', function () {
-  document.title = 'Home';
+  // #inbox
+  'inbox': function () {
+    return 'Inbox';
+  },
+
+  // #sent?to=john -> r.params.to will equal 'john'
+  'sent': function ({to}) {
+    return 'Sent to ' + to;
+  },
+
+  // #users/chris -> r.params.name will equal 'chris'
+  'users/:name': function ({name}) {
+    return 'User ' + name;
+  },
+
+  // #logout
+  'logout': function () {
+    return 'Logout';
+  }
 });
 
-// #inbox
-r.add('inbox', function () {
-  document.title = 'In';
-});
-
-// #sent?to=john -> r.params.to will equal 'john'
-r.add('sent', function (r) {
-  document.title = 'Out ' + r.params.to;
-});
-
-// #users/chris -> r.params.name will equal 'chris'
-r.add('users/:name', function (r) {
-  document.title = 'User ' + r.params.name;
-});
-
-// #logout
-r.add('logout', function () {
-  document.title = 'Logout';
-});
+function notFound() {
+  return '<h1>404 Not found :/</h1>';
+}
 
 // Hash-based routing
 function processHash() {
-  var hash = location.hash || '#';
-  r.run(hash.slice(1));
+  const hash = location.hash || '#';
+
+  // Do something useful with the result of the route
+  document.body.textContent = route(hash.slice(1));
 }
 
 window.addEventListener('hashchange', processHash);
@@ -66,74 +72,80 @@ If you pass the following URL:
 
 The value of params.name will be 'joe', not 'chris'.
 
-You can also use it as a pattern matcher trough `lookup`. It works like the router but instead of
-calling the registered callback it returns an object with the callback and the matched params.
 
-### Browserify
+## Route handlers
 
-This library is [CommonJS](http://www.commonjs.org/) compatible, so you can use it in this way:
+Route handlers ara functions that take three arguments and return a result and/or produce a side-effect.
+
+Here's an example handler:
 
 ```javascript
-var Rlite = require('rlite-router'),
-routes = new Rlite();
-
-routes.add('', function () {
-...
+const route = rlite(notFound, {
+  'users/:id': function (params, state, url) {
+    // Do interesting stuff here...
+  }
+});
 ```
+
+The first argument is `params`. It is an object representing the route parameters. So, in the following
+example, if you were to run `route('users/33')`, params would be `{id: '33'}`.
+
+The second argument is `state`. It is an optional value that was passed into the route function. So, in
+the following example, if you were to run `route('users/22', 'Hello')`, params would be `{id: '22'}` and
+state would be `'Hello'`.
+
+The third argument is `url`. It is the URL which was matched to the route. So, if you were to run
+`route('users/25')`, params would be `{id: '22'}`, state would be `undefined` and url would be `'users/25'`.
+
+
+## Modules
+
+If you're using ES6, import rlite like so:
+
+```javascript
+import rlite from 'rlite-router';
+
+const routes = rlite(notFound, {
+  '': function () { }
+});
+
+// etc
+```
+
+Or using [CommonJS](http://www.commonjs.org/) like so:
+
+```javascript
+var Rlite = require('rlite-router');
+var routes = rlite(notFound, {
+  '': function () { }
+});
+
+// etc
+```
+
 
 ## Handling 404s
 
-Rlite's run method returns true if the route matched and false if it didn't.
+The first parameter to rlite is the 404 handler. This function will be invoked when rlite
+is called with a URL that has no matching routes.
 
-So, you could do a 404 like this:
-
-    if (!r.run(hash.substr(1))) {
-      show404Page();
-    }
-
-## Checking to see if there is already a handler for a URL
+In the following example, the body will end up with `<h1>WORLD</h1>`.
 
 ```javascript
-r.exists('/some/url/here'); // returns true if there is a matching handler
-```
-
-## Multiple Handlers
-
-By default, Rlite doesn't allow more than one handler per route. So, if
-you were to do this:
-
-```javascript
-r.add('hey/:name', function (r) {
-    // This will never run because the
-    // next registration overwrites this one
+const route = rlite(() => '<h1>404 NOT FOUND</h1>', {
+  'hello': => '<h1>WORLD</h1>'
 });
 
-r.add('hey/:name', function(r) {
-    // This will run. Last one in wins!
-});
+document.body.innerHTML = route('/not/a/valid/url');
 ```
 
-If you want to have multiple handlers for the same route, you can
-include plugins/rlite-handlers.min.js, so your scripts might look like:
+## Changes from 1.x
 
-    <script src="rlite.min.js"></script>
-    <script src="plugins/rlite-handlers.min.js"></scripts>
-
-You'd use it like this:
-
-```javascript
-    var r = Rlite();
-
-    function setTitle(r) {
-      document.title = r.params.name;
-    }
-
-    function logName(r) {
-      console.log(r.params.name);
-    }
-
-    r.add('example/:name', Rlite.handlers(setTitle, logName));
-```
+- The parameters to route handlers have changed
+- The plugins have been dropped since 2.x is more functional in nature, it's easy to extend
+- rlite returns a function, rather than an object
+- You can pass optional state into your route handlers
+- The result of your route handler is returned by the router
 
 ## Installation
 
@@ -141,8 +153,7 @@ Just download rlite.min.js, or use bower:
 
     bower install rlite
 
-Or use npm:
-https://www.npmjs.com/package/rlite-router
+Or use npm: https://www.npmjs.com/package/rlite-router
 
     npm install --save rlite-router
 
@@ -169,7 +180,7 @@ I've been using Rlite along with React and Redux. [Here's a write up on how that
 
 ## License MIT
 
-Copyright (c) 2015 Chris Davies
+Copyright (c) 2016 Chris Davies
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation

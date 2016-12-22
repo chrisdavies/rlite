@@ -58,7 +58,7 @@ window.addEventListener('hashchange', processHash);
 processHash();
 ```
 
-The previous examples should be relatively self-explantatory. Simple, parameterized routes are supported. Only relative URLs are supported. (So, instead of passing: 'http://example.com/users/1', pass '/users/1').
+The previous examples should be relatively self-explantatory. Simple, parameterized routes are supported. Only relative URLs are supported. (So, instead of passing: `'http://example.com/users/1'`, pass `'/users/1'`).
 
 Routes are not case sensitive, so `'Users/:name'` will resolve to `'users/:name'`
 
@@ -87,12 +87,11 @@ const route = rlite(notFound, {
 });
 ```
 
-The first argument is `params`. It is an object representing the route parameters. So, in the following
-example, if you were to run `route('users/33')`, params would be `{id: '33'}`.
+The first argument is `params`. It is an object representing the route parameters. So, if you were to
+run `route('users/33')`, params would be `{id: '33'}`.
 
-The second argument is `state`. It is an optional value that was passed into the route function. So, in
-the following example, if you were to run `route('users/22', 'Hello')`, params would be `{id: '22'}` and
-state would be `'Hello'`.
+The second argument is `state`. It is an optional value that was passed into the route function. So,
+if you were to run `route('users/22', 'Hello')`, params would be `{id: '22'}` and state would be `'Hello'`.
 
 The third argument is `url`. It is the URL which was matched to the route. So, if you were to run
 `route('users/25')`, params would be `{id: '22'}`, state would be `undefined` and url would be `'users/25'`.
@@ -129,7 +128,7 @@ var routes = rlite(notFound, {
 The first parameter to rlite is the 404 handler. This function will be invoked when rlite
 is called with a URL that has no matching routes.
 
-In the following example, the body will end up with `<h1>WORLD</h1>`.
+In the following example, the body will end up with `<h1>404 NOT FOUND</h1>`.
 
 ```javascript
 const route = rlite(() => '<h1>404 NOT FOUND</h1>', {

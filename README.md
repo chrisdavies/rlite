@@ -2,9 +2,9 @@
 
 Tiny, [fast](http://jsperf.com/rlite/2), light-weight JavaScript routing with zero dependencies.
 
+- Order of route declaration doesn't matter: the most specific route wins
 - Zero dependencies
 - No performance drop as you add routes
-- Order of route declaration doesn't matter: the most specific route wins
 - Less than 600 bytes minified and gzipped
 - Parses query strings
 

@@ -3,7 +3,7 @@
 // The redundancy and inelegance here is for the sake of either size
 // or speed.
 (function (root, factory) {
-  var define = root.define;
+  var define = root && root.define;
 
   if (define && define.amd) {
     define('rlite', [], factory);

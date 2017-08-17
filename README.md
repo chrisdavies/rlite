@@ -5,7 +5,7 @@ Tiny, [fast](http://jsperf.com/rlite/2), light-weight JavaScript routing with ze
 - Order of route declaration doesn't matter: the most specific route wins
 - Zero dependencies
 - No performance drop as you add routes
-- Less than 600 bytes minified and gzipped
+- Less than 700 bytes minified and gzipped
 - Parses query strings
 
 [![Build Status](https://travis-ci.org/chrisdavies/rlite.svg?branch=master)](https://travis-ci.org/chrisdavies/rlite)

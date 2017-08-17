@@ -37,6 +37,18 @@
       expect(route('nopes')).toEqual('Nope!');
     });
 
+    it('It handles deep conflicting routes', function () {
+      const route = rlite(() => '404', {
+        'foo/:bar/baz': ({bar}) => `Hi, ${bar}`,
+        'foo/:bar/:boo': ({bar, boo}) => `Bar=${bar}, Boo=${boo}`,
+        'foo/bar/bing': () => 'BING',
+      });
+
+      expect(route('/foo/bar/baz/')).toEqual('Hi, bar');
+      expect(route('/foo/x/y/')).toEqual('Bar=x, Boo=y');
+      expect(route('/foo/bar/bing/')).toEqual('BING');
+    });
+
     it('Handles route params', function() {
       const route = rlite(noop, {
         'hey/:name': ({name}) => expect(name).toEqual('chris')

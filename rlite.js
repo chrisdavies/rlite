@@ -2,6 +2,8 @@
 // a functional router. It has since been optimized (and thus grown).
 // The redundancy and inelegance here is for the sake of either size
 // or speed.
+//
+// That's why router params are marked with a single char: `~` and named params are denoted `:`
 (function (root, factory) {
   var define = root && root.define;
 
@@ -37,21 +39,47 @@
       return url;
     }
 
-    function processUrl(url, esc) {
-      var pieces = url.split('/'),
-          rules = routes,
-          params = {};
-
-      for (var i = 0; i < pieces.length && rules; ++i) {
-        var piece = esc(pieces[i]);
-        rules = rules[piece.toLowerCase()] || rules[':'];
-        rules && rules['~'] && (params[rules['~']] = piece);
+    // Recursively searches the route tree for a matching route
+    // pieces: an array of url parts, ['users', '1', 'edit']
+    // esc: the function used to url escape values
+    // i: the index of the piece being processed
+    // rules: the route tree
+    // params: the computed route parameters (this is mutated), and is a stack since we don't have fast immutable datatypes
+    //
+    // This attempts to match the most specific route, but may end int a dead-end. We then attempt a less specific
+    // route, following named route parameters. In searching this secondary branch, we need to make sure to clear
+    // any route params that were generated during the search of the dead-end branch.
+    function recurseUrl(pieces, esc, i, rules, params) {
+      if (!rules) {
+        return;
       }
 
-      return rules && {
-        cb: rules['@'],
-        params: params
-      };
+      if (i >= pieces.length) {
+        return {
+          cb: rules['@'],
+          params: params.reduce(function(h, kv) { h[kv[0]] = kv[1]; return h; }, {}),
+        };
+      }
+
+      var piece = esc(pieces[i]);
+      var param = rules['~'];
+      param && (params[param] = piece);
+      var paramLen = params.length;
+      var result = recurseUrl(pieces, esc, i + 1, rules[piece.toLowerCase()], params);
+
+      if (!result) {
+        params.length = paramLen; // Reset any params generated in the unsuccessful search branch
+        var subRules = rules[':'];
+        subRules && params.push([subRules['~'], piece]);
+        result = recurseUrl(pieces, esc, i + 1, subRules, params);
+      }
+
+      return result;
+    }
+
+    function processUrl(pieces, esc) {
+      var params = [];
+      return recurseUrl(pieces, esc, 0, routes, params);
     }
 
     function processQuery(url, ctx, esc) {
@@ -73,7 +101,7 @@
       var querySplit = sanitize(url).split('?');
       var esc = ~url.indexOf('%') ? decode : noop;
 
-      return processQuery(querySplit[1], processUrl(querySplit[0], esc) || {}, esc);
+      return processQuery(querySplit[1], processUrl(querySplit[0].split('/'), esc, 0) || {}, esc);
     }
 
     function add(route, handler) {

@@ -13,7 +13,8 @@
     "url": "https://github.com/chrisdavies/rlite"
   },
   "keywords": [
-    "routing", "router"
+    "routing",
+    "router"
   ],
   "author": "Chris Davies <ferociousturtle@gmail.com>",
   "license": "MIT",

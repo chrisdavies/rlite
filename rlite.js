@@ -62,24 +62,18 @@
       }
 
       var piece = esc(pieces[i]);
-      var param = rules['~'];
-      param && (params[param] = piece);
       var paramLen = params.length;
-      var result = recurseUrl(pieces, esc, i + 1, rules[piece.toLowerCase()], params);
-
-      if (!result) {
-        params.length = paramLen; // Reset any params generated in the unsuccessful search branch
-        var subRules = rules[':'];
-        subRules && params.push([subRules['~'], piece]);
-        result = recurseUrl(pieces, esc, i + 1, subRules, params);
-      }
-
-      return result;
+      return recurseUrl(pieces, esc, i + 1, rules[piece.toLowerCase()], params)
+        || recurseNamedUrl(pieces, esc, i + 1, rules, ':', piece, params, paramLen)
+        || recurseNamedUrl(pieces, esc, pieces.length, rules, '*', pieces.slice(i).join('/'), params, paramLen);
     }
 
-    function processUrl(pieces, esc) {
-      var params = [];
-      return recurseUrl(pieces, esc, 0, routes, params);
+    // Recurses for a named route, where the name is looked up via key and associated with val
+    function recurseNamedUrl(pieces, esc, i, rules, key, val, params, paramLen) {
+      params.length = paramLen; // Reset any params generated in the unsuccessful search branch
+      var subRules = rules[key];
+      subRules && params.push([subRules['~'], val]);
+      return recurseUrl(pieces, esc, i, subRules, params);
     }
 
     function processQuery(url, ctx, esc) {
@@ -101,7 +95,7 @@
       var querySplit = sanitize(url).split('?');
       var esc = ~url.indexOf('%') ? decode : noop;
 
-      return processQuery(querySplit[1], processUrl(querySplit[0].split('/'), esc, 0) || {}, esc);
+      return processQuery(querySplit[1], recurseUrl(querySplit[0].split('/'), esc, 0, routes, []) || {}, esc);
     }
 
     function add(route, handler) {
@@ -110,11 +104,11 @@
 
       for (var i = +(route[0] === '/'); i < pieces.length; ++i) {
         var piece = pieces[i];
-        var name = piece[0] == ':' ? ':' : piece.toLowerCase();
+        var name = piece[0] == ':' ? ':' : piece[0] == '*' ? '*' : piece.toLowerCase();
 
         rules = rules[name] || (rules[name] = {});
 
-        name == ':' && (rules['~'] = piece.slice(1));
+        (name == ':' || name == '*') && (rules['~'] = piece.slice(1));
       }
 
       rules['@'] = handler;

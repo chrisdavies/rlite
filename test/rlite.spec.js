@@ -187,6 +187,17 @@
       expect(route('hoi')).toEqual('GOT IT');
     });
 
+    it('Handles wildcard routes', function() {
+      const route = rlite(() => 'NOT FOUND', {
+        '/users/:name/baz': ({name}) => `Hi, ${name}`,
+        '/users/*name': ({name}) => `Wild, ${name}`,
+      });
+
+      expect(route('hoi')).toEqual('NOT FOUND');
+      expect(route('users/chris/baz')).toEqual('Hi, chris');
+      expect(route('users/chris/bar')).toEqual('Wild, chris/bar');
+    });
+
     it('Encodes params', function() {
       const route = rlite(noop, {
         '': ({hey}) => {

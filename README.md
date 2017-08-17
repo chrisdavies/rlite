@@ -7,6 +7,7 @@ Tiny, [fast](http://jsperf.com/rlite/2), light-weight JavaScript routing with ze
 - No performance drop as you add routes
 - Less than 700 bytes minified and gzipped
 - Parses query strings
+- Wildcard support
 
 [![Build Status](https://travis-ci.org/chrisdavies/rlite.svg?branch=master)](https://travis-ci.org/chrisdavies/rlite)
 
@@ -34,6 +35,11 @@ const route = rlite(notFound, {
   // #users/chris -> r.params.name will equal 'chris'
   'users/:name': function ({name}) {
     return 'User ' + name;
+  },
+
+  // #users/foo/bar/baz -> r.params.path will equal 'foo/bar/baz'
+  'users/*path': function ({path}) {
+    return 'Path = ' + path;
   },
 
   // #logout

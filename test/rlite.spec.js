@@ -191,11 +191,15 @@
       const route = rlite(() => 'NOT FOUND', {
         '/users/:name/baz': ({name}) => `Hi, ${name}`,
         '/users/*name': ({name}) => `Wild, ${name}`,
+        '/foo/:baz/qux': ({baz}) => `BAZ ${baz}`,
+        '/foo/*bar': ({bar}) => `GOT ${bar}`,
       });
 
       expect(route('hoi')).toEqual('NOT FOUND');
       expect(route('users/chris/baz')).toEqual('Hi, chris');
       expect(route('users/chris/bar')).toEqual('Wild, chris/bar');
+      expect(route('foo/something')).toEqual('GOT something');
+      expect(route('foo/something/qux')).toEqual('BAZ something');
     });
 
     it('Encodes params', function() {

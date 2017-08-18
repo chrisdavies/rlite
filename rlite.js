@@ -55,8 +55,9 @@
       }
 
       if (i >= pieces.length) {
-        return {
-          cb: rules['@'],
+        var cb = rules['@'];
+        return cb && {
+          cb: cb,
           params: params.reduce(function(h, kv) { h[kv[0]] = kv[1]; return h; }, {}),
         };
       }

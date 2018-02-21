@@ -68,7 +68,9 @@ The previous examples should be relatively self-explantatory. Simple, parameteri
 
 Routes are not case sensitive, so `'Users/:name'` will resolve to `'users/:name'`
 
-One other non-obvious thing is this: if there is a query parameter with the same name as a route parameter, it will override the route parameter. So given the following route definition:
+## Possible surprises
+
+If there is a query parameter with the same name as a route parameter, it will override the route parameter. So given the following route definition:
 
     /users/:name
 
@@ -78,6 +80,11 @@ If you pass the following URL:
 
 The value of params.name will be 'joe', not 'chris'.
 
+Keywords/patterns need to immediately follow a slash. So, routes like the following will not be matched:
+
+    /users/user-:id
+
+In this case, you'll need to either use a wildcard route `/users/*prefixedId` or else, you'd want to modify the URL to be in a format like this: `/users/user/:id`.
 
 ## Route handlers
 
@@ -177,7 +184,7 @@ bytes, and I'd like to keep it that way!
 
 ## Status
 
-Rlite is being actively maintained, but is pretty much feature complete, with the possible exception of support for wildcard routes. Generally, I avoid repos that look stale (no recent activity), but in this case, the reason for inactivity is that library is stable and complete.
+Rlite is being actively maintained, but is pretty much feature complete. Generally, I avoid repos that look stale (no recent activity), but in this case, the reason for inactivity is that library is stable and complete.
 
 ## Usage with React
 

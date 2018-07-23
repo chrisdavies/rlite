@@ -107,7 +107,7 @@ The second argument is `state`. It is an optional value that was passed into the
 if you were to run `route('users/22', 'Hello')`, params would be `{id: '22'}` and state would be `'Hello'`.
 
 The third argument is `url`. It is the URL which was matched to the route. So, if you were to run
-`route('users/25')`, params would be `{id: '22'}`, state would be `undefined` and url would be `'users/25'`.
+`route('users/25')`, params would be `{id: '25'}`, state would be `undefined` and url would be `'users/25'`.
 
 
 ## Modules

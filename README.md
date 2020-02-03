@@ -27,8 +27,8 @@ const route = rlite(notFound, {
     return 'Inbox';
   },
 
-  // #sent?to=john -> r.params.to will equal 'john'
-  'sent': function ({to}) {
+  // #sent?to=john -> r.query.to will equal 'john'
+  'sent': function (params, {to}) {
     return 'Sent to ' + to;
   },
 
@@ -70,16 +70,6 @@ Routes are not case sensitive, so `'Users/:name'` will resolve to `'users/:name'
 
 ## Possible surprises
 
-If there is a query parameter with the same name as a route parameter, it will override the route parameter. So given the following route definition:
-
-    /users/:name
-
-If you pass the following URL:
-
-    /users/chris?name=joe
-
-The value of params.name will be 'joe', not 'chris'.
-
 Keywords/patterns need to immediately follow a slash. So, routes like the following will not be matched:
 
     /users/user-:id
@@ -88,13 +78,13 @@ In this case, you'll need to either use a wildcard route `/users/*prefixedId` or
 
 ## Route handlers
 
-Route handlers ara functions that take three arguments and return a result and/or produce a side-effect.
+Route handlers are functions that take four arguments and return a result and/or produce a side-effect.
 
 Here's an example handler:
 
 ```javascript
 const route = rlite(notFound, {
-  'users/:id': function (params, state, url) {
+  'users/:id': function (params, query, state, url) {
     // Do interesting stuff here...
   }
 });
@@ -103,10 +93,14 @@ const route = rlite(notFound, {
 The first argument is `params`. It is an object representing the route parameters. So, if you were to
 run `route('users/33')`, params would be `{id: '33'}`.
 
-The second argument is `state`. It is an optional value that was passed into the route function. So,
+The second argument is `query`. It is an object representing the query
+parameters. So, if you were to run `route('users/33?lang=en')`, query would
+be `{lang: 'en'}`.
+
+The third argument is `state`. It is an optional value that was passed into the route function. So,
 if you were to run `route('users/22', 'Hello')`, params would be `{id: '22'}` and state would be `'Hello'`.
 
-The third argument is `url`. It is the URL which was matched to the route. So, if you were to run
+The fourth argument is `url`. It is the URL which was matched to the route. So, if you were to run
 `route('users/25')`, params would be `{id: '25'}`, state would be `undefined` and url would be `'users/25'`.
 
 
@@ -150,6 +144,10 @@ const route = rlite(() => '<h1>404 NOT FOUND</h1>', {
 
 document.body.innerHTML = route('/not/a/valid/url');
 ```
+
+## Changes from 2.x
+
+- Route handlers take four arguments instead of three: query parameters are returned separately from route parameters.
 
 ## Changes from 1.x
 

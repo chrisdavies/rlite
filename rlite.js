@@ -79,13 +79,13 @@
 
     function processQuery(url, ctx, esc) {
       if (url && ctx.cb) {
-        var hash = url.indexOf('#'),
-            query = (hash < 0 ? url : url.slice(0, hash)).split('&');
+        var query = url.split('#')[0].split('&');
 
+        ctx.query = {};
         for (var i = 0; i < query.length; ++i) {
           var nameValue = query[i].split('=');
 
-          ctx.params[nameValue[0]] = esc(nameValue[1]);
+          ctx.query[nameValue[0]] = esc(nameValue[1]);
         }
       }
 
@@ -118,7 +118,7 @@
     function run(url, arg) {
       var result = lookup(url);
 
-      return (result.cb || notFound)(result.params, arg, url);
+      return (result.cb || notFound)(result.params, result.query, arg, url);
     };
   };
 }));

@@ -2,7 +2,7 @@
   describe('Rlite', function () {
 
     it('Does not put hash values in query', function () {
-      const route = rlite(noop, {stuff: ({name}) => expect(name).toEqual('value')});
+      const route = rlite(noop, {stuff: (params, {name}) => expect(name).toEqual('value')});
 
       route('stuff?name=value#baz');
     });
@@ -83,7 +83,7 @@
 
     it('Passes the argument and url through', function() {
       const route = rlite(noop, {
-        'hey/:name': ({name}, arg, url) => {
+        'hey/:name': ({name}, query, arg, url) => {
           expect(arg).toEqual('Wut');
           expect(name).toEqual('You');
           expect(url).toEqual('hey/You');
@@ -105,9 +105,9 @@
 
     it('Understands specificity', function() {
       const route = rlite(noop, {
-        'hey/joe': (_1, _2, url) => expect(url).toEqual('hey/joe'),
+        'hey/joe': (_1, _2, _3, url) => expect(url).toEqual('hey/joe'),
         'hey/:name': () => {throw new Error('Name called')},
-        'hey/jane': (_1, _2, url) => expect(url).toEqual('hey/jane'),
+        'hey/jane': (_1, _2, _3, url) => expect(url).toEqual('hey/jane'),
       });
 
       route('hey/joe');
@@ -127,18 +127,20 @@
       route('hey/chris/last/davies');
     });
 
-    it('Overrides params with query string values', function() {
+    it('Does not override params with query string values', function() {
       const route = rlite(noop, {
         'hey/:name/new': () => {throw new Error('New called');},
         'hey/:name': () => {throw new Error('Name called');},
-        'hey/:name/last/:last': function({name, last}) {
-          expect(name).toEqual('ham');
-          expect(last).toEqual('mayo');
-          return name + ' ' + last;
+        'hey/:name/last/:last': function({name, last}, {name: qname, last: qlast}) {
+          expect(name).toEqual('chris');
+          expect(last).toEqual('davies');
+          expect(qname).toEqual('ham');
+          expect(qlast).toEqual('mayo');
+          return name + ' ' + last + ' likes ' + qlast + ' and ' + qname;
         }
       });
 
-      expect(route('hey/chris/last/davies?last=mayo&name=ham')).toEqual('ham mayo');
+      expect(route('hey/chris/last/davies?last=mayo&name=ham')).toEqual('chris davies likes mayo and ham');
     });
 
     it('Handles not founds', function() {
@@ -170,7 +172,7 @@
 
     it('Handles trailing slash with query', function() {
       const route = rlite(noop, {
-        'hoi': ({there}) => {
+        'hoi': (_1, {there}) => {
           expect(there).toEqual('yup');
           return 'Yeppers';
         }
@@ -204,7 +206,7 @@
 
     it('Encodes params', function() {
       const route = rlite(noop, {
-        '': ({hey}) => {
+        '': (_1, {hey}) => {
           expect(hey).toEqual('/what/now');
           return 'HOME';
         },
@@ -214,7 +216,7 @@
           return ':hey';
         },
 
-        'more-complex/:hey': ({hey, hui}) => {
+        'more-complex/:hey': ({hey}, {hui}) => {
           expect(hey).toEqual('/hoi/hai?hui');
           expect(hui).toEqual('/hoi/hai');
           return 'LAST';
